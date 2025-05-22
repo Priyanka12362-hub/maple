@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultative Training Needs Advisor - Maple Learning Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; 
+            color: black; 
+        }
+        .survey-page {
+            display: none; 
+        }
+        .survey-page.active {
+            display: block; 
+        }
+        .survey-section {
+            border-color: #00dc82; 
+        }
+        .survey-section legend {
+            font-size: 1.125rem; 
+            font-weight: 600;
+            color: black; 
+            padding-left: 0.5rem; 
+            padding-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem; 
+            font-weight: 700; 
+            color: black; 
+        }
+        
+        /* Option Buttons */
+        .option-button-group .option-label {
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            background-color: #00dc82; 
+            color: black; 
+            padding: 0.875rem 0.5rem; 
+            margin: 0.125rem; 
+            border-radius: 0.375rem; 
+            border: 1px solid #00b36b; 
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+            font-weight: 500;
+            height: 100%; 
+            line-height: 1.3;
+            word-break: break-word; 
+        }
+
+        .option-button-group .option-label:hover {
+            background-color: #00c775; 
+            border-color: #00a05e; 
+        }
+
+        .option-button-group .option-input {
+            display: none; 
+        }
+
+        .option-button-group .option-input:checked + .option-label {
+            background-color: white; 
+            color: #00dc82; 
+            border: 2px solid #00dc82; 
+            box-shadow: 0 0 8px rgba(0, 220, 130, 0.5); 
+        }
+        /* End of Option Buttons */
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: #00dc82; 
+            color: black;
+            border-color: #00c775; 
+        }
+        .btn-primary:hover {
+            background-color: #00c775; 
+            border-color: #00b36b;
+        }
+        .btn-secondary {
+            background-color: #ce854b; 
+            color: black; 
+            border-color: #b87443; 
+        }
+        .btn-secondary:hover {
+            background-color: #b87443; 
+            border-color: #a2633a;
+        }
+        .header-logo {
+            max-height: 60px; /* Use max-height to maintain aspect ratio */
+            width: auto; /* Allow width to adjust based on height */
+            margin-bottom: 0.75rem; /* Increased margin */
+        }
+        .header-title { color: black; }
+        .header-subtitle { color: #4b5563; }
+        
+        /* Enhanced Results Card */
+        .results-card {
+            background-color: white;
+            padding: 2rem; 
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); 
+        }
+        .results-card h2 { 
+            font-size: 1.75rem; 
+            font-weight: 700; 
+            color: black; 
+            margin-bottom: 1.5rem; 
+            text-align: center;
+        }
+        .results-card .section-title { 
+            font-size: 1.375rem; 
+            font-weight: 600;
+            color: #00dc82; 
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #00dc82; 
+        }
+
+        .results-card p, .results-card ul { 
+            color: #374151; 
+            margin-bottom: 1rem; 
+            line-height: 1.6; 
+        }
+        .results-card ul { 
+            list-style-type: none; 
+            padding-left: 0; 
+        }
+        .results-card ul li {
+            background-color: #f9fafb; 
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.375rem;
+            border-left: 4px solid #00dc82; 
+        }
+         .results-card ul li strong { 
+            color: #1f2937; 
+        }
+        .results-card .rationale-text {
+            background-color: #eefbf3; 
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1fae5; 
+        }
+        .results-card .note-text { 
+            background-color: #fffbeb; 
+            color: #78350f; 
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #fef3c7; 
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #resultsSection { display: none; }
+        #validationMessage { 
+            background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; 
+            padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem;
+        }
+        .navigation-buttons { display: flex; justify-content: flex-end; margin-top: 2rem; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-xl">
+        <header class="text-center mb-8">
+            <img src="ed1e6ec9-f9e7-4e9b-9449-003f7e591fd7.png" alt="Maple Learning Solutions Logo" class="header-logo mx-auto">
+            
+            <h1 class="text-3xl font-bold header-title mt-2">Maple Learning Solutions</h1>
+            <p class="text-xl font-semibold text-gray-700">Training Needs Analysis & Solution Advisor</p>
+            <p class="header-subtitle mt-3">Welcome! This tool is designed by Maple Learning Solutions to act as your consultant, guiding you through a needs analysis to identify the core requirements of your training initiative. By answering the following questions, we can help you pinpoint the most effective learning solutions and strategies for your stakeholders.</p>
+        </header>
+
+        <div id="validationMessageContainer" class="mb-6"></div> 
+
+        <form id="modalitySurvey" class="space-y-8">
+            <div id="page1" class="survey-page active">
+                <fieldset class="survey-section border p-6 rounded-md">
+                    <legend>Step 1: Understanding Your Learning Objectives & Content</legend>
+                    
+                    <div>
+                        <span class="form-label" data-question-name="Primary learning objectives">1. What are your top 3 primary goals for this training? (Select up to 3 that best apply)</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div>
+                                <input type="checkbox" id="objOnboarding" name="learningObjectives" value="Onboarding/FoundationalKnowledge" class="option-input">
+                                <label for="objOnboarding" class="option-label w-full">Onboarding & Foundational Knowledge (e.g., new hire integration, company policies, core processes)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="objProductTechnical" name="learningObjectives" value="ProductKnowledge/TechnicalSkills" class="option-input">
+                                <label for="objProductTechnical" class="option-label w-full">Product Knowledge & Technical Skills (e.g., feature mastery, system usage, procedural expertise)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="objSalesCustomer" name="learningObjectives" value="Sales/CustomerServiceExcellence" class="option-input">
+                                <label for="objSalesCustomer" class="option-label w-full">Sales & Customer Service Excellence (e.g., selling techniques, negotiation, client relations)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="objLeadershipSoftSkills" name="learningObjectives" value="Leadership/SoftSkills" class="option-input">
+                                <label for="objLeadershipSoftSkills" class="option-label w-full">Leadership & Soft Skill Development (e.g., critical thinking, communication, teamwork)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="objCompliance" name="learningObjectives" value="Compliance/Ethics/Safety" class="option-input">
+                                <label for="objCompliance" class="option-label w-full">Compliance, Ethics & Safety Standards (e.g., regulatory requirements, workplace safety)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="objStrategicChange" name="learningObjectives" value="StrategicInitiatives/ChangeManagement" class="option-input">
+                                <label for="objStrategicChange" class="option-label w-full">Strategic Initiatives & Change Management (e.g., new systems, process improvements)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Primary nature of content">2. What is the core nature of the information or skills to be taught? (Select all that apply)</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div>
+                                <input type="checkbox" id="contentTypeTechnical" name="contentNature" value="Technical Skills/Procedural Steps" class="option-input">
+                                <label for="contentTypeTechnical" class="option-label w-full">Technical Skills or Procedural Steps (how-to guides, system usage)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="contentTypeConceptual" name="contentNature" value="Conceptual Knowledge/Theoretical Principles" class="option-input">
+                                <label for="contentTypeConceptual" class="option-label w-full">Conceptual Knowledge or Theoretical Principles (understanding why, models)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="contentTypeSoftSkills" name="contentNature" value="Soft Skills/Interpersonal Competencies" class="option-input">
+                                <label for="contentTypeSoftSkills" class="option-label w-full">Soft Skills or Interpersonal Competencies (e.g., communication, teamwork)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="contentTypeProduct" name="contentNature" value="Product/Service Details" class="option-input">
+                                <label for="contentTypeProduct" class="option-label w-full">Product or Service Details (features, benefits, competitive landscape)</label>
+                            </div>
+                             <div>
+                                <input type="checkbox" id="contentTypeSales" name="contentNature" value="Sales Strategies/Customer Engagement" class="option-input">
+                                <label for="contentTypeSales" class="option-label w-full">Sales Strategies or Customer Engagement Techniques</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Content complexity">3. How would you rate the complexity of the subject matter for the learners?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div>
+                                <input type="radio" id="complexityLow" name="contentComplexity" value="Low" required class="option-input">
+                                <label for="complexityLow" class="option-label w-full">Low (Relatively simple, easily grasped)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="complexityMedium" name="contentComplexity" value="Medium" class="option-input">
+                                <label for="complexityMedium" class="option-label w-full">Medium (Requires some explanation and practice)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="complexityHigh" name="contentComplexity" value="High" class="option-input">
+                                <label for="complexityHigh" class="option-label w-full">High (Complex, abstract, needs significant guidance)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Content stability">4. How frequently do you anticipate the training content will need updates?</span>
+                         <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div>
+                                <input type="radio" id="stabilityStable" name="contentStability" value="Very stable" required class="option-input">
+                                <label for="stabilityStable" class="option-label w-full">Infrequently (Stable for 1-2+ years)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="stabilityModerate" name="contentStability" value="Moderately stable" class="option-input">
+                                <label for="stabilityModerate" class="option-label w-full">Moderately (Minor annual updates expected)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="stabilityVolatile" name="contentStability" value="Volatile" class="option-input">
+                                <label for="stabilityVolatile" class="option-label w-full">Frequently (Regular changes expected)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Desired knowledge retention">5. What level(s) of understanding or skill application do learners need post-training? (Select all that apply)</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div><input type="checkbox" id="retentionAwareness" name="desiredRetention" value="Awareness" class="option-input"><label for="retentionAwareness" class="option-label w-full">Awareness (Basic understanding of concepts)</label></div>
+                            <div><input type="checkbox" id="retentionComprehension" name="desiredRetention" value="Comprehension & Application" class="option-input"><label for="retentionComprehension" class="option-label w-full">Comprehension & Application (Able to apply knowledge)</label></div>
+                            <div><input type="checkbox" id="retentionMastery" name="desiredRetention" value="Mastery & Synthesis" class="option-input"><label for="retentionMastery" class="option-label w-full">Mastery & Synthesis (Able to analyze, evaluate, create)</label></div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-primary next-page-btn" data-nextpage="page2">Next: About Your Learners &rarr;</button>
+                </div>
+            </div>
+
+            <div id="page2" class="survey-page">
+                <fieldset class="survey-section border p-6 rounded-md">
+                    <legend>Step 2: Profiling Your Learners</legend>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Primary target audience">6. Who is the primary group (or groups) of learners for this training? (Select all that apply)</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div>
+                                <input type="checkbox" id="audienceNewHires" name="audienceDescription" value="New Hires/Entry-Level" class="option-input">
+                                <label for="audienceNewHires" class="option-label w-full">New Hires / Entry-Level Staff</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="audienceExperienced" name="audienceDescription" value="Experienced Professionals (Upskilling)" class="option-input">
+                                <label for="audienceExperienced" class="option-label w-full">Experienced Professionals (Upskilling/Reskilling)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="audienceManagers" name="audienceDescription" value="Managers/Leaders" class="option-input">
+                                <label for="audienceManagers" class="option-label w-full">Managers / Team Leaders</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="audienceMixed" name="audienceDescription" value="Mixed/Diverse Roles" class="option-input">
+                                <label for="audienceMixed" class="option-label w-full">A Mix of Roles and Experience Levels</label>
+                            </div>
+                             <div>
+                                <input type="checkbox" id="audienceCustomers" name="audienceDescription" value="Customers/External Partners" class="option-input">
+                                <label for="audienceCustomers" class="option-label w-full">Customers / External Partners</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Number of learners">7. Approximately how many learners need to be trained (overall or per session)?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-1">
+                            <div><input type="radio" id="learnersSmall" name="numLearners" value="<20" required class="option-input"><label for="learnersSmall" class="option-label w-full">Fewer than 20</label></div>
+                            <div><input type="radio" id="learnersMedium" name="numLearners" value="20-100" class="option-input"><label for="learnersMedium" class="option-label w-full">20 - 100</label></div>
+                            <div><input type="radio" id="learnersLarge" name="numLearners" value="100-500" class="option-input"><label for="learnersLarge" class="option-label w-full">100 - 500</label></div>
+                            <div><input type="radio" id="learnersVeryLarge" name="numLearners" value="500+" class="option-input"><label for="learnersVeryLarge" class="option-label w-full">More than 500</label></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Learner location">8. How are your learners geographically distributed?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div><input type="radio" id="locationSingle" name="learnerLocation" value="Single location" required class="option-input"><label for="locationSingle" class="option-label w-full">All in One Location</label></div>
+                            <div><input type="radio" id="locationMultiRegion" name="learnerLocation" value="Multiple locations - same region" class="option-input"><label for="locationMultiRegion" class="option-label w-full">Multiple Locations (Same City/Region)</label></div>
+                            <div><input type="radio" id="locationNational" name="learnerLocation" value="Nationally dispersed" class="option-input"><label for="locationNational" class="option-label w-full">Nationally Dispersed</label></div>
+                            <div><input type="radio" id="locationGlobal" name="learnerLocation" value="Globally dispersed" class="option-input"><label for="locationGlobal" class="option-label w-full">Globally Dispersed</label></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Learner tech comfort">9. What's the general comfort level of your learners with technology?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div><input type="radio" id="techComfortLow" name="techComfort" value="Low" required class="option-input"><label for="techComfortLow" class="option-label w-full">Low (Prefer traditional methods, limited tech use)</label></div>
+                            <div><input type="radio" id="techComfortMedium" name="techComfort" value="Medium" class="option-input"><label for="techComfortMedium" class="option-label w-full">Medium (Comfortable with basic software/online tools)</label></div>
+                            <div><input type="radio" id="techComfortHigh" name="techComfort" value="High" class="option-input"><label for="techComfortHigh" class="option-label w-full">High (Tech-savvy, enjoy using new digital tools)</label></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Learner device access">10. How readily do learners have access to computers/devices and stable internet for training?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div><input type="radio" id="accessYes" name="deviceAccess" value="Readily available" required class="option-input"><label for="accessYes" class="option-label w-full">Readily Available (Consistent access)</label></div>
+                            <div><input type="radio" id="accessLimited" name="deviceAccess" value="Limited access" class="option-input"><label for="accessLimited" class="option-label w-full">Limited Access (Some may have challenges)</label></div>
+                            <div><input type="radio" id="accessNo" name="deviceAccess" value="Significant issues" class="option-input"><label for="accessNo" class="option-label w-full">Significant Issues (Access is a major barrier)</label></div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Need for peer interaction">11. How important is peer-to-peer interaction and collaboration for this learning experience?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div><input type="radio" id="peerInteractionHigh" name="peerInteractionNeed" value="High" required class="option-input"><label for="peerInteractionHigh" class="option-label w-full">High Importance (Crucial for learning)</label></div>
+                            <div><input type="radio" id="peerInteractionModerate" name="peerInteractionNeed" value="Moderate" class="option-input"><label for="peerInteractionModerate" class="option-label w-full">Moderate Importance (Beneficial but not essential)</label></div>
+                            <div><input type="radio" id="peerInteractionLow" name="peerInteractionNeed" value="Low" class="option-input"><label for="peerInteractionLow" class="option-label w-full">Low Importance (Individual learning is sufficient)</label></div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary prev-page-btn mr-2" data-prevpage="page1">&larr; Previous</button>
+                    <button type="button" class="btn btn-primary next-page-btn" data-nextpage="page3">Next: Logistics & Resources &rarr;</button>
+                </div>
+            </div>
+
+            <div id="page3" class="survey-page">
+                <fieldset class="survey-section border p-6 rounded-md">
+                    <legend>Step 3: Considering Logistics & Available Resources</legend>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Estimated budget">12. What is the general budget range allocated for this training initiative?</span>
+                        <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-1">
+                            <div>
+                                <input type="radio" id="budgetLow" name="estimatedBudget" value="Low (< $5,000)" required class="option-input">
+                                <label for="budgetLow" class="option-label w-full">Lower Range (e.g., < $5,000)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="budgetMedium" name="estimatedBudget" value="Medium ($5K - $15K)" class="option-input">
+                                <label for="budgetMedium" class="option-label w-full">Medium Range (e.g., $5K - $15K)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="budgetHigh" name="estimatedBudget" value="High ($15K - $30K)" class="option-input">
+                                <label for="budgetHigh" class="option-label w-full">Higher Range (e.g., $15K - $30K)</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="budgetVeryHigh" name="estimatedBudget" value="Very High (>$30K) / TBD" class="option-input">
+                                <label for="budgetVeryHigh" class="option-label w-full">Significant Investment (>$30K) or To Be Determined</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Existing materials">13. Are there existing materials (e.g., documents, presentations) that can be used or adapted for this training?</span>
+                         <div class="option-button-group grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div><input type="radio" id="existingMaterialsYes" name="existingMaterials" value="Yes" required class="option-input"><label for="existingMaterialsYes" class="option-label w-full">Yes, substantial relevant materials exist</label></div>
+                            <div><input type="radio" id="existingMaterialsNo" name="existingMaterials" value="No" class="option-input"><label for="existingMaterialsNo" class="option-label w-full">No, or very few relevant materials exist</label></div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary prev-page-btn mr-2" data-prevpage="page2">&larr; Previous</button>
+                    <button type="button" class="btn btn-primary next-page-btn" data-nextpage="page4">Next: Desired Engagement &rarr;</button>
+                </div>
+            </div>
+
+            <div id="page4" class="survey-page">
+                 <fieldset class="survey-section border p-6 rounded-md">
+                    <legend>Step 4: Defining Desired Learner Engagement (for Digital Solutions)</legend>
+                    <div class="mt-6">
+                        <span class="form-label" data-question-name="Preferred digital interactivity level">14. If a digital solution is considered, what level of interactivity and engagement are you aiming for?</span>
+                         <div class="option-button-group grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                            <div><input type="radio" id="digitalLevel1" name="preferredDigitalLevel" value="level1" required class="option-input"><label for="digitalLevel1" class="option-label w-full">Level 1: Foundational (Information delivery, simple quizzes)</label></div>
+                            <div><input type="radio" id="digitalLevel2" name="preferredDigitalLevel" value="level2" class="option-input"><label for="digitalLevel2" class="option-label w-full">Level 2: Interactive (Scenarios, branching, basic simulations)</label></div>
+                            <div><input type="radio" id="digitalLevel3" name="preferredDigitalLevel" value="level3" class="option-input"><label for="digitalLevel3" class="option-label w-full">Level 3: Immersive (Gamification, complex simulations, rich media)</label></div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary prev-page-btn mr-2" data-prevpage="page3">&larr; Previous</button>
+                    <button type="submit" class="btn btn-primary">Analyze Needs & Get Solution Ideas</button>
+                </div>
+            </div>
+
+            <div id="resetButtonContainer" class="text-center mt-8" style="display:none;"> 
+                 <button type="reset" id="resetButton" class="btn btn-secondary">Start New Analysis</button>
+            </div>
+        </form>
+
+        <div id="resultsSection" class="mt-10 results-card">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const surveyForm = document.getElementById('modalitySurvey');
+            const resultsSection = document.getElementById('resultsSection');
+            const resetButton = document.getElementById('resetButton');
+            const resetButtonContainer = document.getElementById('resetButtonContainer');
+            const validationMessageContainer = document.getElementById('validationMessageContainer');
+            const pages = document.querySelectorAll('.survey-page');
+            let currentPageId = 'page1';
+
+            function showPage(pageId) {
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === pageId) {
+                        page.classList.add('active');
+                    }
+                });
+                currentPageId = pageId;
+                window.scrollTo(0, 0); 
+                validationMessageContainer.innerHTML = ''; 
+            }
+
+            function validateCurrentPage() {
+                validationMessageContainer.innerHTML = ''; 
+                const currentPageElement = document.getElementById(currentPageId);
+                if (!currentPageElement) return false;
+
+                let allQuestionsOnPageAnswered = true;
+                const unansweredQuestionsOnPage = [];
+                
+                const questionsOnPage = currentPageElement.querySelectorAll('.form-label[data-question-name]');
+
+                questionsOnPage.forEach(labelElement => {
+                    const inputGroupContainer = labelElement.nextElementSibling;
+                    const firstInput = inputGroupContainer.querySelector('input[type="radio"], input[type="checkbox"]');
+                    if (!firstInput) return; 
+
+                    const groupName = firstInput.name;
+                    const groupInputs = surveyForm.querySelectorAll(`input[name="${groupName}"]`);
+                    const isAnswered = Array.from(groupInputs).some(input => input.checked);
+                    
+                    if (!isAnswered) {
+                        allQuestionsOnPageAnswered = false;
+                        unansweredQuestionsOnPage.push(labelElement.dataset.questionName);
+                    }
+                });
+
+                if (!allQuestionsOnPageAnswered) {
+                    let messageHtml = '<div id="validationMessage"><strong>Please answer the following questions on this page:</strong><ul>';
+                    unansweredQuestionsOnPage.forEach(qText => {
+                        messageHtml += `<li>${qText}</li>`;
+                    });
+                    messageHtml += '</ul></div>';
+                    validationMessageContainer.innerHTML = messageHtml;
+                    validationMessageContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return false;
+                }
+                return true;
+            }
+
+            document.querySelectorAll('.next-page-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (validateCurrentPage()) {
+                        showPage(this.dataset.nextpage);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.prev-page-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    showPage(this.dataset.prevpage);
+                });
+            });
+            
+            const toolsData = {
+                level1: [
+                    { name: "Microsoft PowerPoint + iSpring", note: "Good for converting existing presentations into basic SCORM courses quickly." },
+                    { name: "Google Slides + Add-ons", note: "Collaborative and simple for information delivery; some add-ons offer light interactivity." },
+                    { name: "Articulate Rise 360", note: "Excellent for rapid development of responsive, scrolling-based courses with basic quizzes." },
+                    { name: "Canva Docs/Presentations", note: "User-friendly for visually appealing informational content; less focus on SCORM/LMS." }
+                ],
+                level2: [
+                    { name: "Articulate Storyline 360", note: "Highly versatile for custom interactions, scenarios, software simulations, and complex quizzing." },
+                    { name: "Adobe Captivate", note: "Strong for software simulations, responsive design, and can handle moderately complex interactions." },
+                    { name: "dominKnow | ONE", note: "Cloud-based, supports responsive design and collaborative development for varied interactive content." },
+                    { name: "Elucidat", note: "Focuses on scalable eLearning, managing variations for different audiences; good for larger teams." },
+                    { name: "iSpring Suite Max", note: "PowerPoint-based but with a rich set of tools for creating interactive courses, dialogue simulations, and video lectures." }
+                ],
+                level3: [
+                    { name: "Articulate Storyline 360 (Advanced)", note: "Can build highly gamified experiences using variables, triggers, and creative design." },
+                    { name: "Adobe Captivate (Advanced/VR)", note: "Supports advanced actions, VR projects, and can be used for complex simulations." },
+                    { name: "Unity or Unreal Engine", note: "Game development engines for truly immersive 3D simulations and serious games; requires specialized programming skills." },
+                    { name: "Specialized Gamification Platforms", note: "Offer pre-built game templates and mechanics (e.g., TheTrainingArcade, MLevel); can speed up development for certain game types." },
+                    { name: "Custom Web Development (HTML5/JS/CSS)", note: "For completely bespoke, highly interactive experiences; requires web development expertise." }
+                ]
+            };
+
+            const timelinesData = {
+                level1: {
+                    description: "Primarily information dissemination with static text/graphics and simple quizzes (e.g., 'click-next' presentations, basic multiple-choice questions).",
+                    devTimePerFinishedHour: "40 - 80 hours",
+                    exampleModuleTime: "2 - 5 weeks (for a 30-minute module)"
+                },
+                level2: {
+                    description: "Includes custom graphics, some animations, voice-over narration, interactive elements like scenarios, branching, drag-and-drop activities, software simulations, and moderately complex quizzes.",
+                    devTimePerFinishedHour: "80 - 200 hours",
+                    exampleModuleTime: "5 - 12 weeks (for a 30-minute module)"
+                },
+                level3: {
+                    description: "Incorporates complex branching scenarios, custom illustrations/animations, game mechanics (points, badges, leaderboards), personalized feedback, adaptive learning paths, potentially 3D elements or immersive simulations, and professional video/audio.",
+                    devTimePerFinishedHour: "200 - 400+ hours (can be significantly higher for full serious games or complex VR)",
+                    exampleModuleTime: "12 - 24+ weeks (for a 30-minute module)"
+                }
+            };
+
+            surveyForm.addEventListener('submit', function (event) {
+                event.preventDefault(); 
+                if (!validateCurrentPage()) { 
+                    return;
+                }
+                
+                const formData = new FormData(surveyForm);
+                const data = {};
+                const checkboxGroups = ['learningObjectives', 'contentNature', 'desiredRetention', 'audienceDescription'];
+                
+                for (let [key, value] of formData.entries()) {
+                    if (checkboxGroups.includes(key)) {
+                        if (!data[key]) {
+                            data[key] = [];
+                        }
+                        data[key].push(value);
+                    } else {
+                        data[key] = value;
+                    }
+                }
+
+                const recommendation = analyzeSurveyData(data);
+                displayResults(recommendation, data);
+                
+                document.getElementById(currentPageId).style.display = 'none'; 
+                resultsSection.style.display = 'block'; 
+                resetButtonContainer.style.display = 'block'; 
+                window.scrollTo(0, 0); 
+            });
+
+            resetButton.addEventListener('click', function() {
+                surveyForm.reset();
+                validationMessageContainer.innerHTML = ''; 
+                resultsSection.style.display = 'none';
+                resultsSection.innerHTML = ''; 
+                resetButtonContainer.style.display = 'none';
+                showPage('page1'); 
+            });
+
+            function analyzeSurveyData(data) {
+                let classroomScore = 0;
+                let digitalScore = 0;
+                let rationalePoints = { classroom: [], digital: [] };
+
+                const safeData = (key, defaultValue = "") => data[key] || defaultValue;
+                const safeArray = (key) => data[key] || []; 
+
+                const objectives = safeArray('learningObjectives');
+                if (objectives.includes('Onboarding/FoundationalKnowledge')) { digitalScore += 0.8; rationalePoints.digital.push("need for Onboarding & Foundational Knowledge"); }
+                if (objectives.includes('ProductKnowledge/TechnicalSkills')) { digitalScore += 1.2; rationalePoints.digital.push("focus on Product Knowledge & Technical Skills"); }
+                if (objectives.includes('Sales/CustomerServiceExcellence')) { digitalScore += 1; classroomScore += 1; rationalePoints.digital.push("aim for Sales & Customer Service Excellence"); rationalePoints.classroom.push("interactive Sales & Customer Service practice");}
+                if (objectives.includes('Leadership/SoftSkills')) { classroomScore += 1.8; digitalScore += 0.5; rationalePoints.classroom.push("development of Leadership & Soft Skills"); }
+                if (objectives.includes('Compliance/Ethics/Safety')) { digitalScore += 1; classroomScore += 0.5; rationalePoints.digital.push("need for Compliance, Ethics & Safety training"); }
+                if (objectives.includes('StrategicInitiatives/ChangeManagement')) { digitalScore += 0.7; classroomScore += 0.3; rationalePoints.digital.push("support for Strategic Initiatives & Change Management");}
+
+
+                const contentNatures = safeArray('contentNature');
+                if (contentNatures.includes('Technical Skills/Procedural Steps')) { digitalScore += 1; }
+                if (contentNatures.includes('Conceptual Knowledge/Theoretical Principles')) { digitalScore += 0.5; classroomScore += 0.5; }
+                if (contentNatures.includes('Soft Skills/Interpersonal Competencies')) { classroomScore += 1.5; digitalScore += 0.5; rationalePoints.classroom.push("focus on Soft Skills/Interpersonal Competencies");}
+                if (contentNatures.includes('Product/Service Details')) { digitalScore += 1; }
+                if (contentNatures.includes('Sales Strategies/Customer Engagement')) { digitalScore += 1; classroomScore += 0.5; rationalePoints.digital.push("focus on Sales Strategies");}
+
+                if (safeData('contentComplexity') === 'High') { classroomScore += 2; rationalePoints.classroom.push("High content complexity"); }
+                if (safeData('contentComplexity') === 'Low') { digitalScore += 1; rationalePoints.digital.push("Low content complexity"); }
+                
+                if (safeData('contentStability') === 'Volatile') { digitalScore += 2; rationalePoints.digital.push("Volatile content (frequent updates)"); }
+                
+                const retentions = safeArray('desiredRetention');
+                if (retentions.includes('Mastery & Synthesis')) { digitalScore += 1.5; classroomScore +=1; rationalePoints.digital.push("goal of Mastery & Synthesis");}
+                if (retentions.includes('Comprehension & Application')) { digitalScore += 1; classroomScore += 0.5;}
+                if (retentions.includes('Awareness')) { digitalScore += 0.5;}
+
+                const audiences = safeArray('audienceDescription');
+                if (audiences.includes('New Hires/Entry-Level')) { digitalScore += 0.5; }
+                if (audiences.includes('Customers/External Partners')) { digitalScore += 1; rationalePoints.digital.push("training external audiences (Customers/Partners)");}
+                if (audiences.includes('Managers/Leaders') && objectives.includes('Leadership/SoftSkills')) { classroomScore += 1; digitalScore += 0.5;}
+
+
+                const numLearners = safeData('numLearners');
+                if (['100-500', '500+'].includes(numLearners)) { 
+                    digitalScore += (numLearners === '500+' ? 3 : 2); 
+                    rationalePoints.digital.push(`Training a large number of learners (${numLearners})`);
+                } else if (numLearners === '20-100') {
+                    digitalScore += 1;
+                }
+
+                const learnerLocation = safeData('learnerLocation');
+                if (['Nationally dispersed', 'Globally dispersed'].includes(learnerLocation)) { 
+                    digitalScore += (learnerLocation === 'Globally dispersed' ? 3 : 2);
+                    rationalePoints.digital.push(`${learnerLocation} learners`);
+                } else if (learnerLocation === 'Multiple locations - same region') {
+                    digitalScore += 1;
+                } else if (learnerLocation === 'Single location') {
+                    classroomScore +=1; rationalePoints.classroom.push("Single learner location");
+                }
+
+                if (safeData('techComfort') === 'Low') { classroomScore += 2; rationalePoints.classroom.push("Low tech comfort among learners"); }
+                if (safeData('techComfort') === 'High') { digitalScore += 1; rationalePoints.digital.push("High tech comfort among learners"); }
+                
+                if (safeData('deviceAccess') === 'Significant issues') { classroomScore += 2; rationalePoints.classroom.push("Significant device/internet access issues"); }
+                if (safeData('deviceAccess') === 'Readily available') { digitalScore += 1; rationalePoints.digital.push("Readily available device/internet access"); }
+
+                if (safeData('peerInteractionNeed') === 'High') { classroomScore += 1.5; rationalePoints.classroom.push("High need for peer interaction"); digitalScore += 0.5; }
+                if (safeData('peerInteractionNeed') === 'Low') { digitalScore += 1; }
+
+                let recommendedModality;
+                if (objectives.includes('Leadership/SoftSkills') && contentNatures.includes('Soft Skills/Interpersonal Competencies') && safeData('peerInteractionNeed') === 'High') {
+                    classroomScore += 2; 
+                }
+
+                if (classroomScore > digitalScore + 1.5) { 
+                    recommendedModality = "Classroom Training";
+                } else {
+                    recommendedModality = "Digital Learning";
+                }
+
+                let modalityRationale = "";
+                if (recommendedModality === "Classroom Training") {
+                     modalityRationale = "Based on your inputs, particularly factors like " + generateRationaleSummary(rationalePoints.classroom, rationalePoints.digital.length === 0) + " classroom training appears to be a strong fit. This approach excels when direct interaction, complex skill practice, or soft skill development are paramount.";
+                } else { 
+                     modalityRationale = "Considering factors such as " + generateRationaleSummary(rationalePoints.digital, rationalePoints.classroom.length === 0) + " digital learning is recommended. This is often ideal for scalability, consistent delivery to dispersed audiences, and content that benefits from self-paced learning or frequent updates.";
+                }
+                
+                let digitalLevel = null;
+                let digitalLevelNote = "";
+                if (recommendedModality === "Digital Learning") {
+                    digitalLevel = safeData('preferredDigitalLevel', 'level1'); 
+                    
+                    if (objectives.includes('Leadership/SoftSkills') && digitalLevel === 'level1') {
+                         digitalLevelNote = "Note: For your goal of enhancing 'Leadership & Soft Skills', a Level 1 digital approach might be too basic. Consider exploring Level 2 or Level 3 for more robust scenarios and simulations.";
+                    } else if (retentions.includes('Mastery & Synthesis') && (digitalLevel === 'level1' || digitalLevel === 'level2')) {
+                         digitalLevelNote = "Note: To achieve 'Mastery & Synthesis', especially if combined with complex content or skill acquisition, investing in Level 2 or Level 3 digital learning will likely yield better results due to deeper engagement and application opportunities.";
+                    } else if (safeData('contentComplexity') === 'High' && digitalLevel === 'level1') {
+                        digitalLevelNote = "Note: While Level 1 was preferred for interactivity, the high content complexity identified might benefit from exploring Level 2 digital strategies for enhanced understanding and engagement.";
+                    }
+                }
+
+                return {
+                    modality: recommendedModality,
+                    rationale: modalityRationale,
+                    digitalLevel: digitalLevel,
+                    digitalLevelNote: digitalLevelNote,
+                    selectedObjectives: objectives, 
+                    selectedContentNatures: contentNatures,
+                    selectedRetentions: retentions,
+                    selectedAudiences: audiences
+                };
+            }
+            
+            function generateRationaleSummary(points, isPrimaryList) {
+                if (points.length === 0) return isPrimaryList ? "various factors identified in your analysis," : "other considerations,";
+                if (points.length === 1) return points[0].toLowerCase() + (isPrimaryList ? "," : " and other similar considerations,");
+                if (points.length === 2) return points.join(" and ").toLowerCase() + (isPrimaryList ? "," : " and other similar considerations,");
+                return points.slice(0, 2).join(", ").toLowerCase() + ", and other similar considerations identified in your analysis,";
+            }
+
+            function displayResults(recommendation, surveyData) {
+                let html = `<h2>Your Training Needs Analysis & Solution Insights</h2>`;
+                html += `<p>Thank you for completing the needs analysis. Based on the information you provided, here are some insights and potential solutions to consider for your training initiative:</p>`;
+                
+                if (recommendation.selectedObjectives && recommendation.selectedObjectives.length > 0) {
+                     html += `<p class="mt-4"><strong>Identified Learning Objectives:</strong> ${recommendation.selectedObjectives.map(o => o.replace(/\//g, ' / ')).join(', ')}</p>`;
+                }
+                if (recommendation.selectedContentNatures && recommendation.selectedContentNatures.length > 0) {
+                    html += `<p><strong>Nature of Content:</strong> ${recommendation.selectedContentNatures.map(cn => cn.replace(/\//g, ' / ')).join(', ')}</p>`;
+                }
+                 if (recommendation.selectedRetentions && recommendation.selectedRetentions.length > 0) {
+                    html += `<p><strong>Desired Learner Outcomes:</strong> ${recommendation.selectedRetentions.join(', ')}</p>`;
+                }
+                if (recommendation.selectedAudiences && recommendation.selectedAudiences.length > 0) {
+                    html += `<p><strong>Target Audience(s):</strong> ${recommendation.selectedAudiences.map(a => a.replace(/\//g, ' / ')).join(', ')}</p>`;
+                }
+
+                html += `<p class="mt-4"><strong>Key Consideration - Budget Indication:</strong> ${surveyData.estimatedBudget || 'Not specified'}</p>`;
+                
+                html += `<div class="section-title mt-6">Recommended Learning Approach: ${recommendation.modality}</div>`;
+                html += `<p class="rationale-text"><strong>Why this approach?</strong> ${recommendation.rationale}</p>`;
+
+                if (recommendation.modality === "Digital Learning" && recommendation.digitalLevel) {
+                    const levelKey = recommendation.digitalLevel; 
+                    const levelName = levelKey.replace('level', 'Level '); 
+                    
+                    html += `<div class="section-title mt-4">Suggested Digital Learning Engagement Level: ${levelName}</div>`;
+                    if(recommendation.digitalLevelNote) {
+                        html += `<p class="note-text"><em>${recommendation.digitalLevelNote}</em></p>`;
+                    }
+                    html += `<p><strong>Description of ${levelName}:</strong> ${timelinesData[levelKey].description}</p>`;
+                    
+                    html += `<div class="section-title mt-4">Potential Development Tools for ${levelName}:</div>`;
+                    html += `<ul>`;
+                    toolsData[levelKey].forEach(tool => {
+                        html += `<li><strong>${tool.name}:</strong> ${tool.note}</li>`;
+                    });
+                    html += `</ul>`;
+
+                    html += `<div class="section-title mt-4">Estimated Development Timelines for ${levelName}:</div>`;
+                    html += `<p><strong>Typical Development Time (per finished hour of learning):</strong> ${timelinesData[levelKey].devTimePerFinishedHour}</p>`;
+                    html += `<p><strong>Example Timeline (for a 30-minute module):</strong> ${timelinesData[levelKey].exampleModuleTime}</p>`;
+                    html += `<p><small>Note: Timelines are estimates and can vary based on content complexity, resource availability, and review cycles.</small></p>`;
+
+                } else if (recommendation.modality === "Classroom Training") {
+                     html += `<div class="section-title mt-4">Key Considerations for Classroom Training:</div>`;
+                    html += `<ul>
+                                <li>Securing qualified instructors with relevant expertise.</li>
+                                <li>Developing robust facilitator guides and engaging participant materials.</li>
+                                <li>Arranging suitable training venues and managing logistics effectively.</li>
+                                <li>Designing interactive sessions with ample opportunities for direct feedback, discussion, and hands-on practice.</li>
+                             </ul>`;
+                }
+                
+                html += `<div class="section-title mt-6">Key Considerations & Next Steps:</div>`;
+                html += `<ul>`;
+                if (recommendation.modality === "Digital Learning") {
+                    html += `<li><strong>Subject Matter Expert (SME) Availability:</strong> Ensure SMEs are available to provide content and review materials.</li>`;
+                    html += `<li><strong>Content Creation Resources:</strong> Assess internal/external resources for instructional design, graphic design, and multimedia development.</li>`;
+                    html += `<li><strong>LMS/Platform Integration:</strong> Consider how the digital learning will be delivered and tracked.</li>`;
+                    html += `<li><strong>Pilot Testing:</strong> Plan for a pilot phase with a small group of learners to gather feedback before full rollout.</li>`;
+                } else { // Classroom Training
+                     html += `<li><strong>Instructor Selection & Preparation:</strong> Identify and prepare experienced facilitators.</li>`;
+                     html += `<li><strong>Material Development & Production:</strong> Create and print/distribute necessary handbooks, guides, and activities.</li>`;
+                     html += `<li><strong>Logistics & Scheduling:</strong> Coordinate venue, participant travel (if any), and scheduling.</li>`;
+                }
+                html += `<li><strong>Define Success Metrics:</strong> How will you measure the effectiveness of this training? (e.g., knowledge checks, performance observation, feedback surveys).</li>`;
+                html += `<li><strong>Change Management & Communication:</strong> Plan how you will communicate the training to learners and stakeholders.</li>`;
+                html += `<li><strong>Iterative Review & Feedback:</strong> Incorporate review cycles with stakeholders at key stages of development.</li>`;
+                html += `</ul>`;
+
+                html += `<p class="mt-6">We recommend discussing these insights further to refine the training strategy and plan the next steps for development and implementation.</p>`;
+                
+                resultsSection.innerHTML = html;
+            }
+
+            showPage('page1');
+        });
+    </script>
+</body>
+</html>
